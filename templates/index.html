@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Cricket da galera!</h1>
+
+    <div class="form">
+        <form action="/randomizePlayersList" method="POST">
+            <input type="submit" value="Gera Lista de jogadores">
+        </form>
+
+        <form action="/getPlayersList" method="POST">
+            <input type="submit" value="Atualizar score">
+        </form>
+    </div>
+
+    <div class="row">
+        <div class="column" style="background-color:#aaa;">
+            <div>
+                {% for player in players %}
+                    {%  if player.points < 5  %}
+                        {{ player.name }} - {{ player.points }}
+                        <!-- <a href="/addPoint/{{player.id}}">Ponto</a> -->
+                        <button type="button" onclick="addPoint({{player.id}})">Ponto</button>
+                        <br>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="column" style="background-color:#bbb;">
+            <div class="form">
+                <form action="/rolldices" method="POST">
+                    <input type="submit" value="Rolar os dados">
+                    
+                    {% if dices|length > 0 %}
+                        {{ dices[0] }} - {{ dices[1] }} = {{ dices[2] }}
+                    {% endif %}
+                </form>
+            </div>
+
+            <br>
+
+            <div class="form">
+                <form action="/callbluf" method="POST">
+                    <input type="submit" value="Blefe">
+
+                    {% if bluf %}
+                        {{ bluf[0] }} - {{ bluf[1] }} = {{ bluf[2] }}
+                    {% endif %}
+                </form>
+            </div>
+
+            <br>
+
+            <div id="content">{{ checkBlufInfo }}</div> {# this is the original system_info passed in from the root view #}
+            <script>
+                var production = true 
+                    var path = production ? 'https://cricketdagalera.herokuapp.com/' : 'http://127.0.0.1:5000/'
+
+                function addPoint(id) 
+                { 
+                    window.location.href = path + "addPoint/" + id
+                    // $.ajax({
+                    //         type:"GET",
+                    //         url: "http://127.0.0.1:5000/addPoint/" + id,
+                    //         success: function(data){
+                    //             buf1=data;
+                    //         }
+                    // })
+                }
+
+                setInterval(function(){ // load the data from your endpoint into the div
+                    $("#content").load("/checkBluf")
+                },500)
+
+                // setInterval(function(){ // load the data from your endpoint into the div
+                //     window.location.href = path + "getPlayersList"
+                // },3000)
+            </script>    
+        </div>
+
+            <div><span class="texts" alt='align="bottom"'>QUE HOMEM</span></div>
+            <img src="/static/Foto_03.png" height="450" width="350"/> 
+            <img src="/static/photo.jpg" height="450" width="500"/> 
+            <img src="/static/IMG-20200314-WA0009.jpg" height="450" width="650"/> 
+            <img src="/static/IMG-20200315-WA0062.jpg" height="650" width="450"/> 
+            </div>
+    
+</body>
+
+<style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    /* Create two equal columns that floats next to each other */
+    .column {
+      float: left;
+      width: 50%;
+      padding: 10px;
+      height: 300px; /* Should be removed. Only for demonstration */
+    }
+
+    .texts {
+        vertical-align: text-top;
+        font-size: xx-large;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+</style>
+</html>
